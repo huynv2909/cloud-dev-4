@@ -15,7 +15,6 @@ export const handler = middy(
     const todoId = event.pathParameters.todoId
     const userId = getUserId(event)
     const s3Bucket = process.env.ATTACHMENT_S3_BUCKET
-    // TODO: Return a presigned URL to upload a file for a TODO item with the provided id
     const key = todoId + "_" + userId
     const url = await createAttachmentPresignedUrl(key)
     

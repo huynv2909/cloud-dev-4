@@ -13,7 +13,6 @@ export const handler = middy(
   async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     logger.info('deleteTodo ' + event)
     const todoId = event.pathParameters.todoId
-    // TODO: Remove a TODO item by id
     const userId = getUserId(event)
     await deleteTodo(
       todoId,

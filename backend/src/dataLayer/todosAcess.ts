@@ -7,7 +7,6 @@ const AWSXRay = require('aws-xray-sdk-core')
 const XAWS = AWSXRay.captureAWS(AWS)
 
 
-// TODO: Implement the dataLayer logic
 export class TodosAccess {
     constructor(
         private readonly documentClient: DocumentClient = new XAWS.DynamoDB.DocumentClient(),
@@ -15,73 +14,104 @@ export class TodosAccess {
         private readonly todosIndex = process.env.TODOS_CREATED_AT_INDEX
     ) { }
 
-    async createTodoItem(todoItem: TodoItem): Promise<TodoItem> {
-        await this.documentClient.put({
-            TableName: this.todosTable,
-            Item: todoItem
-        }).promise()
+    async createTodoItem(
+                todoItem: TodoItem
+            ): Promise<TodoItem>
+        {
+            await this.documentClient.put(
+            {
+                TableName: this.todosTable,
+                Item: todoItem
+            }).promise()
 
-        return todoItem;
-    }
+            return todoItem;
+        }
 
-    async getAllTodos(userId: string): Promise<TodoItem[]> {
-        const res = await this.documentClient.query({
-            TableName: this.todosTable,
-            IndexName: this.todosIndex,
-            KeyConditionExpression: 'userId = :userId',
-            ExpressionAttributeValues: {
-                ':userId': userId
-            }
-        }).promise()
-        const todos = res.Items as TodoItem[]
-        return todos
-    }
+    async getAllTodos(
+                userId: string
+            ): Promise<TodoItem[]>
+        {
+            const res = await this.documentClient.query(
+            {
+                TableName: this.todosTable,
+                IndexName: this.todosIndex,
+                KeyConditionExpression: 'userId = :userId',
+                ExpressionAttributeValues:
+                {
+                    ':userId': userId
+                }
+            }).promise()
+            const todos = res.Items as TodoItem[]
+            return todos
+        }
 
-    async updateTodoItem(todoId: string, userId: string, todoUpdate: TodoUpdate): Promise<TodoUpdate> {
-        await this.documentClient.update({
-            TableName: this.todosTable,
-            Key: {
-                todoId,
-                userId
-            },
-            UpdateExpression: 'set #name = :name, dueDate = :dueDate, done = :done',
-            ExpressionAttributeValues: {
-                ':name': todoUpdate.name,
-                ':dueDate': todoUpdate.dueDate,
-                ':done': todoUpdate.done
-            },
-            ExpressionAttributeNames: {
-                '#name': 'name'
-            },
-            ReturnValues: 'ALL_NEW'
-        }).promise()
+    async updateTodoItem(
+                todoId: string,
+                userId: string,
+                todoUpdate: TodoUpdate
+            ): Promise<TodoUpdate>
+        {
+            await this.documentClient.update(
+            {
+                TableName: this.todosTable,
+                Key:
+                {
+                    todoId,
+                    userId
+                },
+                UpdateExpression: 'set #name = :name, dueDate = :dueDate, done = :done',
+                ExpressionAttributeValues:
+                {
+                    ':name': todoUpdate.name,
+                    ':dueDate': todoUpdate.dueDate,
+                    ':done': todoUpdate.done
+                },
+                ExpressionAttributeNames:
+                {
+                    '#name': 'name'
+                },
+                ReturnValues: 'ALL_NEW'
+            }).promise()
 
-        return todoUpdate
-    }
+            return todoUpdate
+        }
 
-    async deleteTodoItem(todoId: string, userId: string): Promise<string> {
-        await this.documentClient.delete({
-            TableName: this.todosTable,
-            Key: {
-                todoId,
-                userId
-            }
-        }).promise()
+    async deleteTodoItem(
+                todoId: string,
+                userId: string
+            ): Promise<string>
+        {
+            await this.documentClient.delete(
+            {
+                TableName: this.todosTable,
+                Key:
+                {
+                    todoId,
+                    userId
+                }
+            }).promise()
 
-        return todoId
-    }
+            return todoId
+        }
 
-    async updateTodoAttachmentUrl(todoId: string, userId: string, attachmentUrl: string): Promise<void> {
-        await this.documentClient.update({
-            TableName: this.todosTable,
-            Key: {
-                todoId,
-                userId
-            },
-            UpdateExpression: 'set attachmentUrl = :attachmentUrl',
-            ExpressionAttributeValues: {
-                ':attachmentUrl': attachmentUrl
-            }
-        }).promise()
-    }
+    async updateTodoAttachmentUrl(
+                todoId: string,
+                userId: string,
+                attachmentUrl: string
+            ): Promise<void> 
+        {
+            await this.documentClient.update({
+                TableName: this.todosTable,
+                Key:
+                {
+                    todoId,
+                    userId
+                },
+                UpdateExpression: 'set attachmentUrl = :attachmentUrl',
+                ExpressionAttributeValues:
+                {
+                    ':attachmentUrl': attachmentUrl
+                }
+            }).promise()
+        }
 }
