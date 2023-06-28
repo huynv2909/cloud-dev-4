@@ -6,9 +6,10 @@ import { cors, httpErrorHandler } from 'middy/middlewares'
 
 import { updateTodo } from '../../businessLogic/todos'
 import { UpdateTodoRequest } from '../../requests/UpdateTodoRequest'
-import { getUserId } from '../utils'
+import { getUserId, publishMessageToSNSTopic } from '../utils'
 import { createLogger } from '../../utils/logger'
 const logger = createLogger('createTodo')
+const topicArn = process.env.topicARN;
 
 export const handler = middy(
   async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
@@ -18,6 +19,7 @@ export const handler = middy(
     const userId = getUserId(event)
     await updateTodo(todoId, updatedTodo, userId)
 
+    await publishMessageToSNSTopic(topicArn,  `${userId} updated a todo`)
     return {
       statusCode: 204,
       body: ''

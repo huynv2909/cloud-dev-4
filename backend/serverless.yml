@@ -61,6 +61,9 @@ functions:
 
   CreateTodo:
     handler: src/lambda/http/createTodo.handler
+    environment:
+      topicARN:
+        Ref: TodoTopic
     events:
       - http:
           method: post
@@ -78,9 +81,17 @@ functions:
           - xray:PutTelemetryRecords
           - xray:PutTraceSegments
         Resource: "*"
+      - Effect: Allow
+        Action:
+          - sns:Publish
+        Resource:
+          - Ref: TodoTopic
 
   UpdateTodo:
     handler: src/lambda/http/updateTodo.handler
+    environment:
+      topicARN:
+        Ref: TodoTopic
     events:
       - http:
           method: patch
@@ -98,9 +109,17 @@ functions:
           - xray:PutTelemetryRecords
           - xray:PutTraceSegments
         Resource: "*"
+      - Effect: Allow
+        Action:
+          - sns:Publish
+        Resource:
+          - Ref: TodoTopic
 
   DeleteTodo:
     handler: src/lambda/http/deleteTodo.handler
+    environment:
+      topicARN:
+        Ref: TodoTopic
     events:
       - http:
           method: delete
@@ -112,6 +131,11 @@ functions:
         Action:
           - dynamodb:DeleteItem
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
+      - Effect: Allow
+        Action:
+          - sns:Publish
+        Resource:
+          - Ref: TodoTopic
 
   GenerateUploadUrl:
     handler: src/lambda/http/generateUploadUrl.handler
@@ -235,3 +259,16 @@ resources:
                 - 's3:PutObject'
               Resource: 'arn:aws:s3:::${self:provider.environment.ATTACHMENT_S3_BUCKET}/*'
         Bucket: !Ref AttachmentsBucket
+
+    TodoTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        DisplayName: Todo Topic
+
+    EmailTodoSubscription:
+      Type: AWS::SNS::Subscription
+      Properties:
+        Endpoint: huynv2909@gmail.com
+        Protocol: email
+        TopicArn:
+          Ref: TodoTopic
