@@ -69,4 +69,8 @@ export async function updateTodoAttachmentUrl(
         return todoAccess.updateTodoAttachmentUrl(todoId, userId, attachmentUrl)
     }
 
-
+export async function getTodosForReport(
+        ): Promise<TodoItem[]>
+    {
+        return todoAccess.getAllTodosForReport()
+    }

@@ -168,6 +168,37 @@ functions:
           - cloudwatch:PutMetricData
         Resource: '*'
 
+  DailyReport:
+    handler: src/lambda/report/dailyReport.handler
+    environment:
+      topicARN:
+        Ref: TodoTopic
+    events:
+      - schedule:
+          rate: cron(30 05 * * ? *)
+          enabled: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+          - dynamodb:Scan
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+          - dynamodb:Scan
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}/index/${self:provider.environment.TODOS_CREATED_AT_INDEX}
+      - Effect: Allow
+        Action:
+          - xray:PutTelemetryRecords
+          - xray:PutTraceSegments
+        Resource: "*"
+      - Effect: Allow
+        Action:
+          - sns:Publish
+        Resource:
+          - Ref: TodoTopic
+
 resources:
   Resources:
     GatewayResponseDefault4XX:

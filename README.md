@@ -132,6 +132,9 @@ It should return a JSON object that looks like this:
 }
 ```
 
+* `DailyReport` - Daily send email of report user, todo in our application
+![Alt text](images/DailyReport.PNG?raw=true "DailyReport")
+
 All functions are already connected to appropriate events from API Gateway.
 
 An id of a user can be extracted from a JWT token passed by a client.

@@ -114,4 +114,14 @@ export class TodosAccess {
                 }
             }).promise()
         }
+
+        async getAllTodosForReport(): Promise<TodoItem[]>
+        {
+            const res = await this.documentClient.scan(
+            {
+                TableName: this.todosTable
+            }).promise()
+            const todos = res.Items as TodoItem[]
+            return todos
+        }
 }
